@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shorty</title>
+</head>
+<body>
+Shorty
+<form name="shorty" method="POST">
+    {{ form.csrf_token }}
+    {{ form.url.name }} {{ form.url }}
+</form>
+</body>
+</html>
