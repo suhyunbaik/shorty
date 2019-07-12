@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, jsonify, render_template
+from flask import Flask, Blueprint, jsonify, render_template, request, redirect
 from flask_wtf import CSRFProtect
 from werkzeug.contrib.fixers import ProxyFix
 from flask_sqlalchemy import SQLAlchemy
@@ -25,7 +25,11 @@ def create_app(config_name):
 
     @app.route('/', methods=['GET', 'POST'])
     def main():
-        form = ShortyForm()
+        form = ShortyForm(request.form)
+        if request.method == 'POST' and form.validate():
+            url = request.form['url']
+            name = request.form['name']
+            return redirect('/')
         return render_template('main.html', form=form)
 
     return app
