@@ -11,6 +11,7 @@ csrf = CSRFProtect()
 def create_app(config_name):
     app = Flask(__name__)
     app.wsgi_app = ProxyFix(app.wsgi_app)
+    app.config.from_object(config_name)
     db.init_app(app)
     csrf.init_app(app)
 
