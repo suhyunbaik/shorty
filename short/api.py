@@ -1,4 +1,4 @@
-from flask import request, render_template, Blueprint, redirect, jsonify
+from flask import request, render_template, Blueprint, redirect, jsonify, make_response
 from flask.views import MethodView
 from flask_sqlalchemy import SQLAlchemy
 
@@ -41,8 +41,22 @@ class Shorty(MethodView):
         urls = URLS.query.all()
         if not urls:
             return []
-        return jsonify(
-            [dict(original_url=row.original_url,
-                  short_url=row.short_url)
-             for row in urls])
+        return jsonify(urls=[dict(original_url=row.original_url,
+                                  short_url=row.short_url)
+                             for row in urls])
 
+    def post(self):
+        data =request.get_json(silent=True)
+        if not data.get('url'):
+            return make_response(jsonify(msg='url is missing'), 400)
+
+        original_url = data['url']
+        short_url = data.get('name')
+        if not short_url:
+            converted = sum([ord(_) for _ in original_url])
+            short_url = encode(converted)
+
+        new_urls = URLS(original_url=original_url, short_url=short_url)
+        db.session.add(new_urls)
+        db.session.commit()
+        return jsonify(original_url=original_url, short_url=short_url)
