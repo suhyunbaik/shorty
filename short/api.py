@@ -1,4 +1,5 @@
 from flask import request, render_template, Blueprint, redirect, jsonify
+from flask.views import MethodView
 from flask_sqlalchemy import SQLAlchemy
 
 from short.forms import ShortyForm
@@ -35,12 +36,13 @@ def url_converter(short_url):
     return redirect(url.original_url)
 
 
-@api.route('/urls', methods=['GET'])
-def url_lists():
-    urls = URLS.query.all()
-    if not urls:
-        return []
-    return jsonify([dict(original_url=row.original_url,
-                         short_url=row.short_url)
-                    for row in urls])
+class Shorty(MethodView):
+    def get(self):
+        urls = URLS.query.all()
+        if not urls:
+            return []
+        return jsonify(
+            [dict(original_url=row.original_url,
+                  short_url=row.short_url)
+             for row in urls])
 
