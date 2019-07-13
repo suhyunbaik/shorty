@@ -8,9 +8,8 @@ class Config:
     set Flask configuration vars
     """
     # General config
-    DEBUG = False
-    # TESTING = environ['TESTING']
-
+    DEBUG = True
+    TESTING = False
     # Database
     SECRET_KEY = os.environ.get('SECRET_KEY', 'my_precious_secret_key')
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root@localhost:3306/shorty'
@@ -19,12 +18,19 @@ class Config:
     SERVER_PORT = '5000'
 
 
+class TestConfig(Config):
+    """
+    config for test
+    """
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root@localhost:3306/test_shorty'
+
+
 class ProductionConfig(Config):
     """
     config for production
     """
     DEBUG = False
-    TESTING = False
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root@localhost:3306/shorty'
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SERVER_HOST = 'localhost'
@@ -32,6 +38,7 @@ class ProductionConfig(Config):
 
 
 config_by_name = dict(
+    test=TestConfig,
     local=Config,
     prod=ProductionConfig
 )
