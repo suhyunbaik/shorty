@@ -13,10 +13,6 @@ db = SQLAlchemy()
 def app():
     test_config = config_by_name['test']
     app = create_app(test_config)
-    # ctx = app.app_context()
-    # ctx.push()
-    # request.addfinalizer(lambda: ctx.pop())
-    # return app.test_client()
     return app
 
 
