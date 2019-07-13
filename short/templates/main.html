@@ -6,7 +6,9 @@
 </head>
 <style>
 body {background: #000070;}
-form {position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); background: rgba(0,0,0,.1); padding: 100px;}
+form {position: absolute; top: 40%; left: 50%; transform: translate(-50%,-50%); background: rgba(0,0,0,.1); padding: 50px;}
+div {position: absolute; top: 88%; left: 50%; transform: translate(-50%,-50%); background: rgba(0,0,0,.1); padding: 50px;}
+p {width: 100%; color: white; font-family: sans-serif; letter-spacing: 1px; font-size: .8em}
 label{font-family: sans-serif; letter-spacing: 6px; text-transform: uppercase;font-size: .8em;color: #FFF;}
 input[type=text]{display: inline-block;border: none;text-align: left;box-shadow: 3px 2px rgba(121, 83, 210,.3 );padding: 10px;
   width: 100%;margin: 10px 0;background: transparent;color: #FFF;}
@@ -24,5 +26,11 @@ input[type=submit]:hover {background: transparent;border: 2px solid rgba(69, 39,
         <input type="text" id="short" name="short" disabled value='{{ msg }}'>
         <input type="submit" value="변환">
     </form>
+    <div>
+        <label for="short">URL List</label>
+        {% for url in urls %}
+            <p>{{ url.original_url }}  =>  {{ url.short_url }}</p>
+        {% endfor %}
+    </div>
 </body>
 </html>

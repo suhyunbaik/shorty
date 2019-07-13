@@ -22,6 +22,8 @@ def main():
         new_urls = URLS(original_url=original_url, short_url=short_url)
         db.session.add(new_urls)
         db.session.commit()
+
         return render_template('main.html', form=form, msg=short_url)
 
-    return render_template('main.html', form=form)
+    urls = URLS.query.all()
+    return render_template('main.html', form=form, urls=urls)
