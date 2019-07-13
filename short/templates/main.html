@@ -20,6 +20,8 @@ input[type=submit]:hover {background: transparent;border: 2px solid rgba(69, 39,
         {{ form.csrf_token }}
         {{ form.url.label }} {{ form.url }}
         {{ form.name.label }} {{ form.name }}
+        <label for="short">Short URL</label>
+        <input type="text" id="short" name="short" disabled value='{{ msg }}'>
         <input type="submit" value="변환">
     </form>
 </body>
