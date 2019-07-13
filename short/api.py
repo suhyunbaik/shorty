@@ -1,4 +1,4 @@
-from flask import request, render_template, Blueprint
+from flask import request, render_template, Blueprint, redirect
 from flask_sqlalchemy import SQLAlchemy
 
 from short.forms import ShortyForm
@@ -27,3 +27,9 @@ def main():
 
     urls = URLS.query.all()
     return render_template('main.html', form=form, urls=urls)
+
+
+@api.route('/<string:short_url>', methods=['GET'])
+def url_converter(short_url):
+    url = URLS.query.filter_by(short_url=short_url).first_or_404()
+    return redirect(url.original_url)
