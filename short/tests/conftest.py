@@ -30,8 +30,3 @@ def session(init_db):
     ctx._current_session = db.Session()
     return ctx._current_session
 
-    # Engine.execute('create database `test_shorty` default character set utf8')
-    # engine = create_engine('mysql://root@localhost/test_shorty?charset=utf8')
-    # yield engine
-    # db.create_all()
-    # db.drop_all()
