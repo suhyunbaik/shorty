@@ -1,17 +1,14 @@
-from flask import Flask, jsonify, render_template, request, redirect
-from flask_wtf import CSRFProtect
+from flask import Flask, jsonify
 from werkzeug.contrib.fixers import ProxyFix
-from short.forms import ShortyForm
-from short.utils import Base62
-
-csrf = CSRFProtect()
+from short.api import api
 
 
 def create_app(config_name):
-    app = Flask(__name__)
+    app = Flask(__name__,
+                template_folder='templates')
     app.wsgi_app = ProxyFix(app.wsgi_app)
     app.config.from_object(config_name)
-    csrf.init_app(app)
+    app.register_blueprint(api)
 
     @app.route('/ping')
     def health_check():
@@ -20,17 +17,6 @@ def create_app(config_name):
     @app.errorhandler(404)
     def ignore_error(err):
         return jsonify()
-
-    @app.route('/', methods=['GET', 'POST'])
-    def main():
-        form = ShortyForm(request.form)
-        if request.method == 'POST' and form.validate():
-            url = request.form['url']
-            name = request.form['name']
-            # converted = sum([ord(_) for _ in url])
-            base62 = Base62()
-            return redirect('/')
-        return render_template('main.html', form=form)
 
     return app
 
