@@ -1,13 +1,12 @@
 from flask import request, render_template, Blueprint, redirect, jsonify, make_response
 from flask.views import MethodView
-from flask_sqlalchemy import SQLAlchemy
 
+from short.databases import session
 from short.forms import ShortyForm
 from short.models import URLS
 from .utils import encode
 
 api = Blueprint('', __name__)
-db = SQLAlchemy()
 
 
 @api.route('/', methods=['GET', 'POST'])
@@ -21,32 +20,34 @@ def main():
             short_url = encode(converted)
 
         new_urls = URLS(original_url=original_url, short_url=short_url)
-        db.session.add(new_urls)
-        db.session.commit()
+        session.add(new_urls)
+        session.commit()
 
         return render_template('main.html', form=form, msg=short_url)
 
-    urls = URLS.query.all()
+    urls = session.query(URLS).all()
     return render_template('main.html', form=form, urls=urls)
 
 
 @api.route('/<string:short_url>', methods=['GET'])
 def url_converter(short_url):
-    url = URLS.query.filter_by(short_url=short_url).first_or_404()
+    url = session.query(URLS).filter_by(short_url=short_url).first()
+    if not url:
+        return make_response(jsonify(msg='url is missing'), 404)
     return redirect(url.original_url)
 
 
 class Shorty(MethodView):
     def get(self):
-        urls = URLS.query.all()
+        urls = session.query(URLS).all()
         if not urls:
-            return []
+            return jsonify(urls=[])
         return jsonify(urls=[dict(original_url=row.original_url,
                                   short_url=row.short_url)
                              for row in urls])
 
     def post(self):
-        data =request.get_json(silent=True)
+        data = request.get_json(silent=True)
         if not data.get('url'):
             return make_response(jsonify(msg='url is missing'), 400)
 
@@ -57,6 +58,6 @@ class Shorty(MethodView):
             short_url = encode(converted)
 
         new_urls = URLS(original_url=original_url, short_url=short_url)
-        db.session.add(new_urls)
-        db.session.commit()
+        session.add(new_urls)
+        session.commit()
         return jsonify(original_url=original_url, short_url=short_url)

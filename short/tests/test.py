@@ -1,17 +1,17 @@
-from config import config_by_name
 
 
-def test_test_config(app):
-    test_config = config_by_name['test']
-    app.config.from_object(test_config)
-    assert app.config['DEBUG']
-    assert app.config['TESTING']
+def test_ping(client):
+    response = client.get('/ping')
+    assert response.status_code == 200
+    assert response.json == {'ok': 'ok'}
 
 
-def test_ping(app):
-    client = app.test_client()
-    res = client.get('/ping')
-    assert res.status_code == 200
-    assert res.json == {'ok': 'ok'}
+def test_get_urls(client):
+    response = client.get('/urls')
+    assert response.status_code == 200
+    assert list(response.json.keys()) == ['urls']
 
 
+def test_create_short_urls(client):
+    response = client.post('/urls', data=dict())
+    assert response.status_code == 200
