@@ -33,7 +33,6 @@ def init_db():
 @pytest.fixture(scope='session')
 def session(init_db):
     databases.Session = sessionmaker(autocommit=False, autoflush=False, bind=init_db)
-
     ctx = request._get_current_object()
     ctx._current_session = databases.Session()
     return ctx._current_session

@@ -37,27 +37,29 @@ def url_converter(short_url):
     return redirect(url.original_url)
 
 
-class Shorty(MethodView):
-    def get(self):
-        urls = session.query(URLS).all()
-        if not urls:
-            return jsonify(urls=[])
-        return jsonify(urls=[dict(original_url=row.original_url,
-                                  short_url=row.short_url)
-                             for row in urls])
+@api.route('/urls', methods=['GET'])
+def get_urls():
+    urls = session.query(URLS).all()
+    if not urls:
+        return jsonify(urls=[])
+    return jsonify(urls=[dict(original_url=row.original_url,
+                              short_url=row.short_url)
+                         for row in urls])
 
-    def post(self):
-        data = request.get_json(silent=True)
-        if not data.get('url'):
-            return make_response(jsonify(msg='url is missing'), 400)
 
-        original_url = data['url']
-        short_url = data.get('name')
-        if not short_url:
-            converted = sum([ord(_) for _ in original_url])
-            short_url = encode(converted)
+@api.route('/urls', methods=['POST'])
+def create_short_url():
+    data = request.get_json(silent=True)
+    if not data.get('url'):
+        return make_response(jsonify(msg='url is missing'), 400)
 
-        new_urls = URLS(original_url=original_url, short_url=short_url)
-        session.add(new_urls)
-        session.commit()
-        return jsonify(original_url=original_url, short_url=short_url)
+    original_url = data['url']
+    short_url = data.get('name')
+    if not short_url:
+        converted = sum([ord(_) for _ in original_url])
+        short_url = encode(converted)
+
+    new_urls = URLS(original_url=original_url, short_url=short_url)
+    session.add(new_urls)
+    session.commit()
+    return jsonify(original_url=original_url, short_url=short_url)

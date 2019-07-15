@@ -22,7 +22,5 @@ def create_app(config_override=None):
     def ignore_error(err):
         return jsonify()
 
-    app.add_url_rule('/urls', view_func=Shorty.as_view('urls'))
-
     return app
 
