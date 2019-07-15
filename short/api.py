@@ -1,5 +1,4 @@
 from flask import request, render_template, Blueprint, redirect, jsonify, make_response
-from flask.views import MethodView
 
 from short.databases import session
 from short.forms import ShortyForm
@@ -29,14 +28,6 @@ def main():
     return render_template('main.html', form=form, urls=urls)
 
 
-@api.route('/<string:short_url>', methods=['GET'])
-def url_converter(short_url):
-    url = session.query(URLS).filter_by(short_url=short_url).first()
-    if not url:
-        return make_response(jsonify(msg='url is missing'), 404)
-    return redirect(url.original_url)
-
-
 @api.route('/urls', methods=['GET'])
 def get_urls():
     urls = session.query(URLS).all()
@@ -63,3 +54,12 @@ def create_short_url():
     session.add(new_urls)
     session.commit()
     return jsonify(original_url=original_url, short_url=short_url)
+
+
+@api.route('/<string:short_url>', methods=['GET'])
+def url_converter(short_url):
+    url = session.query(URLS).filter_by(short_url=short_url).first()
+    if not url:
+        return make_response(jsonify(msg='url is missing'), 404)
+    return redirect(url.original_url)
+
