@@ -51,6 +51,11 @@ def create_short_url():
         converted = sum([ord(_) for _ in original_url])
         short_url = encode(converted)
 
+    q = URLS.query.fliter(short_url == short_url)
+    short_url_exists = session.query(q.exists()).scalar()
+    if short_url_exists:
+        return make_response(jsonify(msg=f'{original_url} is exists'), 422)
+
     new_urls = URLS(original_url=original_url, short_url=short_url)
     session.add(new_urls)
     session.commit()
@@ -63,4 +68,4 @@ def create_short_url():
 #     if not url:
 #         return make_response(jsonify(msg='url is missing'), 404)
 #     return redirect(url.original_url)
-#
+
