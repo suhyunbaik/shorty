@@ -14,11 +14,11 @@ def read_output_set(fname):
         return json.load(file)
 
 
-@pytest.fixture(scope='function')
-def url_with_name(session):
-    url = URLS(original_url='www.google.com', short_url='go')
-    session.add(url)
-    return url
+# @pytest.fixture(scope='function')
+# def url_with_name(session):
+#     url = URLS(original_url='www.google.com', short_url='go')
+#     session.add(url)
+#     return url
 
 
 @pytest.fixture(scope='function')
@@ -38,13 +38,13 @@ def test_get_emtpy_url_list(client, session):
     assert response.json == {'urls': []}
 
 
-def test_create_short_url_with_missing_required_parameter(client):
+def test_create_short_url_with_missing_required_parameter(client, session):
     response = client.post('/urls', json=dict(name='bar'))
     assert response.status_code == 422
     assert response.json == {'msg': 'url is missing'}
 
 
-def test_create_short_url(client):
+def test_create_short_url(client, session):
     input_set = read_input_set('short_url_with_no_name')
     response = client.post('/urls', json=dict(url=input_set['original_url']))
     assert response.status_code == 200
@@ -53,12 +53,12 @@ def test_create_short_url(client):
 
 
 def test_create_short_url_already_exists(client, url):
-    input_set = read_input_set('short_url_with_name')
-    response = client.post('/urls', json=dict(url=input_set['url']))
+    input_set = read_input_set('short_url_already_exists')
+    response = client.post('/urls', json=dict(url=input_set['original_url']))
     assert response.status_code == 422
 
 
-def test_create_short_url_with_desired_name(client):
+def test_create_short_url_with_desired_name(client, session):
     input_set = read_input_set('short_url_with_name')
     response = client.post('/urls', json=dict(url=input_set['url'], name=input_set['name']))
     assert response.status_code == 200
@@ -69,4 +69,5 @@ def test_create_short_url_with_desired_name(client):
 def test_get_url_list(client, url):
     response = client.get('/urls')
     assert response.status_code == 200
-
+    output_set = read_output_set('url_list')
+    assert response.json == output_set
