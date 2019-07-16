@@ -51,8 +51,7 @@ def create_short_url():
         converted = sum([ord(_) for _ in original_url])
         short_url = encode(converted)
 
-    q = URLS.query.fliter(short_url == short_url)
-    short_url_exists = session.query(q.exists()).scalar()
+    short_url_exists = session.query(URLS).filter(URLS.short_url == short_url).first()
     if short_url_exists:
         return make_response(jsonify(msg=f'{original_url} is exists'), 422)
 
