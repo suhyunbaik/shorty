@@ -16,12 +16,6 @@ def app():
     yield app
     app_context.pop()
 
-    # testing_client = app.test_client()
-    # with app.app_context():
-    #     db.create_all()
-    #     yield testing_client  # this is where the testing happens!
-    #     db.drop_all()
-
 
 @pytest.fixture(scope='session')
 def client(app):
@@ -46,8 +40,6 @@ def db():
 def session(db):
     session = db['session']()
     g.db = session
-    import pdb
-    pdb.set_trace()
     yield session
     session.rollback()
     session.close()
