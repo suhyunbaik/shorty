@@ -1,10 +1,8 @@
 import pytest
-from flask import g
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 from config import config_by_name
 from short.app import create_app
-from short.databases import Base
+from short.databases import Base, Engine
 
 
 @pytest.fixture(scope='session')
@@ -23,24 +21,40 @@ def client(app):
 
 
 @pytest.fixture(scope='session')
-def db():
-    engine = create_engine(config_by_name['test'].SQLALCHEMY_DATABASE_URI, echo=True)
-    session = sessionmaker(bind=engine)
-    _db = {
-        'engine': engine,
-        'session': session
-    }
-    Base.metadata.create_all()
-    yield _db
-    Base.metadata.drop_all()
-    engine.dispose()
+def init_db():
+    # engine = create_engine(config_by_name['test'].SQLALCHEMY_DATABASE_URI, echo=True)
+    # Base.metadata.create_all(engine)
+    # Engine.create()
+    meta = Base.metadata
+    meta.bind = Engine
+    meta.create_all()
+    yield Engine
+    meta.drop_all()
+    Engine.dispose()
+
+    # db.init_app(app)
+    # db.create_all()
+    # yield db
+    # db.drop_all()
 
 
-@pytest.fixture(scope='function')
-def session(db):
-    session = db['session']()
-    g.db = session
-    yield session
-    session.rollback()
-    session.close()
+@pytest.fixture(scope='session')
+def session(init_db):
+    Session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=init_db))
+    yield Session
+    Session.remove()
 
+
+# @pytest.fixture(scope='session')
+# def db():
+#     engine = create_engine(config_by_name['test'].SQLALCHEMY_DATABASE_URI, echo=True)
+#     session = sessionmaker(bind=engine)
+#     _db = {
+#         'engine': engine,
+#         'session': session
+#     }
+#     Base.metadata.create_all()
+#     yield _db
+#     Base.metadata.drop_all()
+#     engine.dispose()
+#

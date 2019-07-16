@@ -32,7 +32,7 @@ def url(session):
     session.commit()
 
 
-def test_get_emtpy_url_list(client):
+def test_get_emtpy_url_list(client, session):
     response = client.get('/urls')
     assert response.status_code == 200
     assert response.json == {'urls': []}
