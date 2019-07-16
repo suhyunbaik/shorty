@@ -52,6 +52,12 @@ def test_create_short_url(client):
     assert response.json == output_set
 
 
+def test_create_short_url_already_exists(client, url):
+    input_set = read_input_set('short_url_with_name')
+    response = client.post('/urls', json=dict(url=input_set['url']))
+    assert response.status_code == 422
+
+
 def test_create_short_url_with_desired_name(client):
     input_set = read_input_set('short_url_with_name')
     response = client.post('/urls', json=dict(url=input_set['url'], name=input_set['name']))

@@ -1,5 +1,7 @@
 from flask import request, render_template, Blueprint, redirect, jsonify, make_response
+from sqlalchemy import or_
 from short.databases import session
+
 from short.forms import ShortyForm
 from short.models import URLS
 from .utils import encode
@@ -51,9 +53,13 @@ def create_short_url():
         converted = sum([ord(_) for _ in original_url])
         short_url = encode(converted)
 
-    short_url_exists = session.query(URLS).filter(URLS.short_url == short_url).first()
-    if short_url_exists:
-        return make_response(jsonify(msg=f'{original_url} is exists'), 422)
+    url_exists = session.query(URLS) \
+        .filter(or_(URLS.original_url == original_url,
+                    URLS.short_url == short_url)) \
+        .first()
+
+    if url_exists:
+        return make_response(jsonify(msg=f'{original_url} or {short_url} exists'), 422)
 
     new_urls = URLS(original_url=original_url, short_url=short_url)
     session.add(new_urls)

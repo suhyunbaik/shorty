@@ -1,14 +1,13 @@
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Column, Integer, String, DateTime
+from short.databases import Base
 
-db = SQLAlchemy()
 
-
-class URLS(db.Model):
+class URLS(Base):
     __tablename__ = 'urls'
 
-    id = db.Column(db.Integer, primary_key=True)
-    original_url = db.Column(db.String(400), nullable=False)
-    short_url = db.Column(db.String(200), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow())
+    id = Column(Integer, primary_key=True)
+    original_url = Column(String(400), nullable=False, unique=True)
+    short_url = Column(String(200), nullable=False, unique=True)
+    created_at = Column(DateTime, default=datetime.utcnow())
 

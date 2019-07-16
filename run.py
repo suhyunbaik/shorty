@@ -1,6 +1,6 @@
 from os import environ
-from short.app import create_app
 from config import config_by_name
+from short.app import create_app
 
 environment = environ['SHORTY_ENV']
 config = config_by_name[environment]
