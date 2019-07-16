@@ -1,10 +1,11 @@
+from os import environ
 from short.app import create_app
+from config import config_by_name
 
+environment = environ['SHORTY_ENV']
+config = config_by_name[environment]
+app = create_app(config)
 
-app = create_app()
 
 if __name__ == '__main__':
-    from config import SERVER_HOST, SERVER_PORT
-
-    app.run(host=SERVER_HOST, port=SERVER_PORT, debug=True)
-
+    app.run()

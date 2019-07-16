@@ -1,5 +1,4 @@
 from flask import request, render_template, Blueprint, redirect, jsonify, make_response
-
 from short.databases import session
 from short.forms import ShortyForm
 from short.models import URLS

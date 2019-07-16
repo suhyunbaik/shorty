@@ -6,12 +6,8 @@ def test_ping(client):
     assert response.json == {'ok': 'ok'}
 
 
-def test_get_urls(client):
+def test_get_emtpy_urls(client):
     response = client.get('/urls')
     assert response.status_code == 200
-    assert list(response.json.keys()) == ['urls']
+    assert response.json == {'urls': []}
 
-
-def test_create_short_urls(client):
-    response = client.post('/urls', data=dict())
-    assert response.status_code == 200
