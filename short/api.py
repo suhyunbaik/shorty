@@ -67,10 +67,10 @@ def create_short_url():
     return jsonify(original_url=original_url, short_url=short_url)
 
 
-# @api.route('/<string:short_url>', methods=['GET'])
-# def url_converter(short_url):
-#     url = session.query(URLS).filter_by(short_url=short_url).first()
-#     if not url:
-#         return make_response(jsonify(msg='url is missing'), 404)
-#     return redirect(url.original_url)
+@api.route('/<string:short_url>', methods=['GET'])
+def url_converter(short_url):
+    url = session.query(URLS).filter_by(short_url=short_url).first()
+    if not url:
+        return make_response(jsonify(msg='url is missing'), 404)
+    return redirect(url.original_url)
 
