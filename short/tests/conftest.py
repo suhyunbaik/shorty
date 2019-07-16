@@ -1,32 +1,32 @@
 import pytest
-from flask import request
-from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from config import config_by_name
 from short.app import create_app
-
-db = SQLAlchemy()
+from short.models import db
 
 
 @pytest.fixture(scope='session')
 def app():
     test_config = config_by_name['test']
     app = create_app(test_config)
+    app.app_context().push()
     return app
 
 
 @pytest.fixture(scope='session')
-def init_db():
+def init_db(app):
+    db.init_app(app)
     db.create_all()
     yield db
     db.drop_all()
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='session', autouse=True)
 def session(init_db):
-    db.session = sessionmaker(autocommit=False, autoflush=False, bind=init_db)
-    ctx = request._get_current_object()
-    ctx._current_session = db.Session()
-    return ctx._current_session
+    engine = create_engine('mysql+pymysql://root@localhost:3306/test_shorty')
+    db.session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    yield db.session
+    db.session.close_all()
 

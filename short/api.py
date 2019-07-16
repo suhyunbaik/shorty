@@ -1,5 +1,4 @@
 from flask import request, render_template, Blueprint, redirect, jsonify, make_response
-from flask.views import MethodView
 from flask_sqlalchemy import SQLAlchemy
 
 from short.forms import ShortyForm
@@ -36,27 +35,33 @@ def url_converter(short_url):
     return redirect(url.original_url)
 
 
-class Shorty(MethodView):
-    def get(self):
+@api.route('/urls', methods=['GET'])
+def get_urls():
+    try:
         urls = URLS.query.all()
-        if not urls:
-            return []
-        return jsonify(urls=[dict(original_url=row.original_url,
-                                  short_url=row.short_url)
-                             for row in urls])
+    except Exception as e:
+        return jsonify(urls=str(e))
 
-    def post(self):
-        data =request.get_json(silent=True)
-        if not data.get('url'):
-            return make_response(jsonify(msg='url is missing'), 400)
+    if not urls:
+        return jsonify(urls=[])
+    return jsonify(urls=[dict(original_url=row.original_url,
+                              short_url=row.short_url)
+                         for row in urls])
 
-        original_url = data['url']
-        short_url = data.get('name')
-        if not short_url:
-            converted = sum([ord(_) for _ in original_url])
-            short_url = encode(converted)
 
-        new_urls = URLS(original_url=original_url, short_url=short_url)
-        db.session.add(new_urls)
-        db.session.commit()
-        return jsonify(original_url=original_url, short_url=short_url)
+@api.route('/urls', methods=['POST'])
+def convert_urls():
+    data = request.get_json(silent=True)
+    if not data.get('url'):
+        return make_response(jsonify(msg='url is missing'), 400)
+
+    original_url = data['url']
+    short_url = data.get('name')
+    if not short_url:
+        converted = sum([ord(_) for _ in original_url])
+        short_url = encode(converted)
+
+    new_urls = URLS(original_url=original_url, short_url=short_url)
+    db.session.add(new_urls)
+    db.session.commit()
+    return jsonify(original_url=original_url, short_url=short_url)

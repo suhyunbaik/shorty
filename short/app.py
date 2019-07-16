@@ -2,7 +2,7 @@ from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
 from werkzeug.contrib.fixers import ProxyFix
-from short.api import api, Shorty
+from short.api import api
 
 db = SQLAlchemy()
 csrf = CSRFProtect()
@@ -23,8 +23,6 @@ def create_app(config_name):
     @app.errorhandler(404)
     def ignore_error(err):
         return jsonify()
-
-    app.add_url_rule('/urls', view_func=Shorty.as_view('urls'))
 
     return app
 
