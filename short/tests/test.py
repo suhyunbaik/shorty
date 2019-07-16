@@ -45,10 +45,11 @@ def test_create_short_url_with_missing_required_parameter(client):
 
 
 def test_create_short_url(client):
-    input_set = read_input_set('input')
-    response = client.post('/urls', json=dict(url=input_set['url']))
+    input_set = read_input_set('short_url_with_no_name')
+    response = client.post('/urls', json=dict(url=input_set['original_url']))
     assert response.status_code == 200
-    assert response.json == {'original_url': url['original_url'], 'short_url': url['short_url']}
+    output_set = read_output_set('short_url_with_no_name')
+    assert response.json == output_set
 
 
 def test_create_short_url_with_desired_name(client):
