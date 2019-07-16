@@ -24,6 +24,7 @@ class TestConfig(Config):
     """
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root@localhost:3306/test_shorty'
+    PRESERVE_CONTEXT_ON_EXCEPTION = False
 
 
 class ProductionConfig(Config):

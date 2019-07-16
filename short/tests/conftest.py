@@ -1,7 +1,7 @@
 import pytest
+from flask import g
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
 from config import config_by_name
 from short.app import create_app
 from short.models import db
@@ -9,24 +9,35 @@ from short.models import db
 
 @pytest.fixture(scope='session')
 def app():
-    test_config = config_by_name['test']
-    app = create_app(test_config)
-    app.app_context().push()
-    return app
+    app = create_app()
+    app_context = app.app_context()
+    app_context.push()
+    yield app
+    app_context.pop()
 
 
 @pytest.fixture(scope='session')
-def init_db(app):
-    db.init_app(app)
-    db.create_all()
-    yield db
-    db.drop_all()
+def client(app):
+    return app.test_client()
 
 
-@pytest.fixture(scope='session', autouse=True)
-def session(init_db):
-    engine = create_engine('mysql+pymysql://root@localhost:3306/test_shorty')
-    db.session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    yield db.session
-    db.session.close_all()
+@pytest.fixture(scope='session')
+def db():
+    engine = create_engine(config_by_name['test'].SQLALCHEMY_DATABASE_URI, echo=True)
+    session = sessionmaker(bind=engine)
+    _db = {
+        'engine': engine,
+        'session': session
+    }
+    yield _db
+    engine.dispose()
+
+
+@pytest.fixture(scope='function')
+def session(db):
+    session = db['session']()
+    g.db = session
+    yield session
+    session.rollback()
+    session.close()
 
