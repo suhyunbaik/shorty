@@ -20,8 +20,11 @@ Shorty is a test project.
 3. install dependencies
 ```pip3 install -r requirements.txt```
 
-4. run project
+4. set environment variable
+```export SHORTY_ENV=local```
+
+5. run project
 ```python run.py```
 
-5. visit `127.0.0.1:5000` to use the app
+6. visit `127.0.0.1:5000` to use the app
 
