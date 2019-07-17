@@ -23,5 +23,5 @@ Shorty is a test project.
 4. run project
 ```python run.py```
 
-5. visit `127.0.0.1:8000` to use the app
+5. visit `127.0.0.1:5000` to use the app
 

@@ -1,3 +1,5 @@
+import re
+
 from flask import request, render_template, Blueprint, redirect, jsonify, make_response
 from short.databases import session
 
@@ -8,24 +10,28 @@ from .utils import encode
 api = Blueprint('', __name__)
 
 
+def create_short_url(original_url):
+    converted = sum([ord(_) for _ in original_url])
+    return encode(converted)
 
 
 @api.route('/', methods=['GET', 'POST'])
 def main():
     form = ShortyForm(request.form)
     if request.method == 'POST':
-        if form.validate():
-            original_url = request.form['url']
-            short_url = request.form.get('name')
-            if not short_url:
-                create_short_url(original_url)
-        else:
+        if not form.validate():
             return render_template('main.html', form=form, msg='다시 입력해주세요')
+
+        original_url = request.form['url']
+        short_url = request.form.get('name')
+        if not short_url:
+            short_url = create_short_url(original_url)
+
         new_urls = URLS(original_url=original_url, short_url=short_url)
         session.add(new_urls)
         session.commit()
-
-        return render_template('main.html', form=form, msg=short_url)
+        urls = session.query(URLS).all()
+        return render_template('main.html', form=form, msg=short_url, urls=urls)
 
     urls = session.query(URLS).all()
     return render_template('main.html', form=form, urls=urls)
@@ -42,7 +48,7 @@ def get_urls():
 
 
 @api.route('/urls', methods=['POST'])
-def create_short_url():
+def get_short_url():
     data = request.get_json(silent=True)
     if not data.get('url'):
         return make_response(jsonify(msg='url is missing'), 422)
@@ -50,7 +56,7 @@ def create_short_url():
     original_url = data['url']
     short_url = data.get('name')
     if not short_url:
-        create_short_url(original_url)
+        short_url = create_short_url(original_url)
 
     url_exists = session.query(URLS) \
         .filter(URLS.short_url == short_url) \
@@ -72,6 +78,3 @@ def url_converter(short_url):
         return make_response(jsonify(msg='url is missing'), 404)
     return redirect(url.original_url)
 
-def create_short_url(original_url):
-    converted = sum([ord(_) for _ in original_url])
-    return encode(converted)
