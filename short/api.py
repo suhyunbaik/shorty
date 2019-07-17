@@ -9,6 +9,11 @@ from .utils import encode
 api = Blueprint('', __name__)
 
 
+def create_short_url(original_url):
+    converted = sum([ord(_) for _ in original_url])
+    return encode(converted)
+
+
 @api.route('/', methods=['GET', 'POST'])
 def main():
     form = ShortyForm(request.form)
@@ -17,8 +22,7 @@ def main():
             original_url = request.form['url']
             short_url = request.form.get('name')
             if not short_url:
-                converted = sum([ord(_) for _ in original_url])
-                short_url = encode(converted)
+                create_short_url(original_url)
         else:
             return render_template('main.html', form=form, msg='다시 입력해주세요')
         new_urls = URLS(original_url=original_url, short_url=short_url)
@@ -50,8 +54,7 @@ def create_short_url():
     original_url = data['url']
     short_url = data.get('name')
     if not short_url:
-        converted = sum([ord(_) for _ in original_url])
-        short_url = encode(converted)
+        create_short_url(original_url)
 
     url_exists = session.query(URLS) \
         .filter(or_(URLS.original_url == original_url,
