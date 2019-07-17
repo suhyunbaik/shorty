@@ -14,13 +14,6 @@ def read_output_set(fname):
         return json.load(file)
 
 
-# @pytest.fixture(scope='function')
-# def url_with_name(session):
-#     url = URLS(original_url='www.google.com', short_url='go')
-#     session.add(url)
-#     return url
-
-
 @pytest.fixture(scope='function')
 def url(session):
     urls = URLS(original_url='https://kr.linkedin.com/in/hyoungnae',
