@@ -50,11 +50,13 @@ def get_urls():
 @api.route('/urls', methods=['POST'])
 def get_short_url():
     data = request.get_json(silent=True)
-    if not data.get('url'):
-        return make_response(jsonify(msg='url is missing'), 422)
+    result = validate_url_and_name(data)
+    if result:
+        return make_response(jsonify(msg=result), 422)
 
     original_url = data['url']
     short_url = data.get('name')
+
     if not short_url:
         short_url = create_short_url(original_url)
 
@@ -77,4 +79,22 @@ def url_converter(short_url):
     if not url:
         return make_response(jsonify(msg='url is missing'), 404)
     return redirect(url.original_url)
+
+
+def validate_url_and_name(data):
+    regex = re.compile(
+        r'^https?://'  # http:// or https://
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|'  # domain
+        r'localhost|'  # localhost...
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # or ip
+        r'(?::\d+)?'  # optional port
+        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+    result = regex.search(data['url'])
+    if result is not None:
+        return 'url 주소가 잘못되었습니다.'
+
+    if data.get('name'):
+        regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
+        if regex.search(data['name']):
+            return '단축 url에 특수문자가 포함되어있습니다.'
 

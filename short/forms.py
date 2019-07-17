@@ -23,7 +23,8 @@ class ShortyForm(FlaskForm):
     def validate_name(self, field):
         if not field.data:
             pass
-        if re.match('[a-z]+', field.data):
+        regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
+        if regex.search(field.data):
             return ValidationError("단축 url에 특수문자가 포함되어있습니다.")
 
 
