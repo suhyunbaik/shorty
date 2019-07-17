@@ -1,6 +1,6 @@
 from os import environ
 
-from flask import Blueprint, request, has_request_context, g
+from flask import Blueprint, request, has_request_context
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
