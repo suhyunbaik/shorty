@@ -24,6 +24,6 @@ class ShortyForm(FlaskForm):
         if not field.data:
             pass
         if re.match('[a-z]+', field.data):
-            return ValidationError("단축 url에 특수문자 &?=%가 포함되어있습니다.")
+            return ValidationError("단축 url에 특수문자가 포함되어있습니다.")
 
 
