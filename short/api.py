@@ -110,6 +110,6 @@ def validate_url_and_name(data):
     if data.get('name'):
         regex = name_regex()
         result = regex.search(data['name'])
-        if result is None:
+        if result is not None:
             return '단축 url에 특수문자가 포함되어있습니다.'
 
