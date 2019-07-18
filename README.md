@@ -1,6 +1,5 @@
 # Shorty
-## Overview
-Shorty is a test project. 
+단축 url 생성
 
 ## Technical info
 * Python 3.7.2
@@ -11,23 +10,23 @@ Shorty is a test project.
 * Alembic
 
 ## Installation / Setup
-1. clone repository
+1. 리포지토리 클론
 ``` git clone git@github.com:suhyunbaik/shorty.git```
 
-2. install pyenv virtualenv(Optional)
+2. pyenv virtualenv 설치 (옵션)
 ```pyenv virtualenv 3.7.2 [environment name]```
 
-3. install dependencies
+3. 패키지 설치
 ```pip3 install -r requirements.txt```
 
-4. set environment variable
+4. 환경변수 설정
 ```export SHORTY_ENV=local```
 
-5. run alembic
+5. alembic 실행해서 테이블 create
 ```alembic upgrade head```
 
-6. run project
+6. 프로젝트 실행
 ```python run.py```
 
-6. visit `127.0.0.1:5000` to use the app
+6. 브라우저에 `127.0.0.1:5000` 또는 포스트맨에 `127.0.0.1:5000/urls` to use the app
 
