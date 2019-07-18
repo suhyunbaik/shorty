@@ -50,6 +50,9 @@ def get_urls():
 @api.route('/urls', methods=['POST'])
 def get_short_url():
     data = request.get_json(silent=True)
+    if not data.get('url'):
+        return make_response(jsonify(msg='url이 없습니다'), 422)
+
     result = validate_url_and_name(data)
     if result:
         return make_response(jsonify(msg=result), 422)
