@@ -37,6 +37,12 @@ def test_create_short_url_with_missing_required_parameter(client, session):
     assert response.json == {'msg': 'url이 없습니다'}
 
 
+def test_create_short_url_with_invalid_url(client):
+    response = client.post('/urls', json=dict(url='https://'))
+    assert response.status_code == 422
+    assert response.json == {'msg': 'url 주소가 잘못되었습니다.'}
+
+
 def test_create_short_url(client, session):
     input_set = read_input_set('short_url_with_no_name')
     response = client.post('/urls', json=dict(url=input_set['original_url']))
