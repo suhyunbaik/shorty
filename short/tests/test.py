@@ -34,7 +34,7 @@ def test_get_emtpy_url_list(client, session):
 def test_create_short_url_with_missing_required_parameter(client, session):
     response = client.post('/urls', json=dict(name='bar'))
     assert response.status_code == 422
-    assert response.json == {'msg': 'url is missing'}
+    assert response.json == {'msg': 'url이 없습니다'}
 
 
 def test_create_short_url(client, session):
