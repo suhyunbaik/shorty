@@ -24,6 +24,9 @@ def main():
 
         original_url = request.form['url']
         short_url = request.form.get('name')
+        is_unique = session.query(URLS).filter(URLS.short_url == short_url).scalar()
+        if not is_unique:
+            return render_template('main.html', form=form, msg='해당 단축url이 이미 존재합니다.')
         if not short_url:
             short_url = create_short_url(original_url)
 
@@ -59,7 +62,6 @@ def get_short_url():
 
     original_url = data['url']
     short_url = data.get('name')
-
     if not short_url:
         short_url = create_short_url(original_url)
 
