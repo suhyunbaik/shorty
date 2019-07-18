@@ -23,7 +23,10 @@ Shorty is a test project.
 4. set environment variable
 ```export SHORTY_ENV=local```
 
-5. run project
+5. run alembic
+```alembic upgrade head```
+
+6. run project
 ```python run.py```
 
 6. visit `127.0.0.1:5000` to use the app
