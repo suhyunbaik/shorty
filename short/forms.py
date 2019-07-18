@@ -15,7 +15,7 @@ class ShortyForm(FlaskForm):
         parsing_result = parsing_url(field.data)
         if regex_result is None:
             if not parsing_result:
-                raise ValidationError("url 주소가 잘못되었습니다.")
+                raise ValidationError("url 주소가 잘못된 형식입니다.")
 
     def validate_name(self, field):
         if not field.data:
@@ -23,6 +23,6 @@ class ShortyForm(FlaskForm):
         regex = name_regex()
         result = regex.search(field.data)
         if result is None:
-            return ValidationError("단축 url에 특수문자가 포함되어있습니다.")
+            return ValidationError("단축 url에 특수문자가 포함되어 있습니다.")
 
 

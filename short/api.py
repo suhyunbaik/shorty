@@ -64,9 +64,10 @@ def get_short_url():
     if not data.get('url'):
         return make_response(jsonify(msg='url이 없습니다'), 422)
 
-    result = validate_url_and_name(data)
-    if result:
-        return make_response(jsonify(msg=result), 422)
+    try:
+        validate_url_and_name(data)
+    except ValueError as e:
+        return make_response(jsonify(msg=str(e)), 422)
 
     original_url = data['url']
     short_url = data.get('name')
@@ -105,11 +106,11 @@ def validate_url_and_name(data):
     parse_result = parsing_url(data['url'])
     if result is None:
         if not parse_result:
-            return 'url 주소가 잘못되었습니다.'
+            raise ValueError('url 주소가 잘못된 형식입니다.')
 
     if data.get('name'):
         regex = name_regex()
         result = regex.search(data['name'])
         if result is not None:
-            return '단축 url에 특수문자가 포함되어있습니다.'
+            raise ValueError('단축 url에 특수문자가 포함되어 있습니다.')
 
