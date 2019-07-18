@@ -38,3 +38,4 @@ def decode(string, alphabet=BASE62):
         idx += 1
 
     return num
+
