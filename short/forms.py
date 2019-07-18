@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, ValidationError
 from wtforms.validators import InputRequired
-import re
+
+from short.utils import name_regex, url_regex, parsing_url
 
 
 class ShortyForm(FlaskForm):
@@ -9,22 +10,19 @@ class ShortyForm(FlaskForm):
     name = StringField('name')
 
     def validate_url(self, field):
-        regex = re.compile(
-            r'^https?://'  # http:// or https://
-            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|'  # domain
-            r'localhost|'  # localhost...
-            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # or ip
-            r'(?::\d+)?'  # optional port
-            r'(?:/?|[/?]\S+)$', re.IGNORECASE)
-        result = regex.search(field.data)
-        if result is not None:
-            raise ValidationError("url 주소가 잘못되었습니다.")
+        regex = url_regex()
+        regex_result = regex.search(field.data)
+        parsing_result = parsing_url(field.data)
+        if regex_result is None:
+            if not parsing_result:
+                raise ValidationError("url 주소가 잘못되었습니다.")
 
     def validate_name(self, field):
         if not field.data:
             pass
-        regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
-        if regex.search(field.data):
+        regex = name_regex()
+        result = regex.search(field.data)
+        if result is None:
             return ValidationError("단축 url에 특수문자가 포함되어있습니다.")
 
 

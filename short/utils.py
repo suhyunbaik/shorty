@@ -1,3 +1,5 @@
+import re
+from urllib import parse
 
 BASE62 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -39,3 +41,22 @@ def decode(string, alphabet=BASE62):
 
     return num
 
+
+def url_regex():
+    return re.compile(
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|'  # domain
+        r'localhost|' 
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ip
+        r'(?::\d+)?'  # optional port
+        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+
+
+def name_regex():
+    return re.compile('[@_!#$%^&*()<>?/\|}{~:]')
+
+
+def parsing_url(url):
+    page = parse.urlparse(url)
+    if page.scheme in ['http', 'https', 'ftp'] and page.netloc != '':
+        return True
+    return False

@@ -1,11 +1,8 @@
-import re
-
 from flask import request, render_template, Blueprint, redirect, jsonify, make_response
 from short.databases import session
-
 from short.forms import ShortyForm
 from short.models import URLS
-from .utils import encode
+from .utils import encode, url_regex, name_regex, parsing_url
 import uuid
 
 api = Blueprint('', __name__)
@@ -103,19 +100,16 @@ def url_converter(short_url):
 
 
 def validate_url_and_name(data):
-    regex = re.compile(
-        r'^https?://'  # http:// or https://
-        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|'  # domain
-        r'localhost|'  # localhost...
-        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # or ip
-        r'(?::\d+)?'  # optional port
-        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+    regex = url_regex()
     result = regex.search(data['url'])
-    if result is not None:
-        return 'url 주소가 잘못되었습니다.'
+    parse_result = parsing_url(data['url'])
+    if result is None:
+        if not parse_result:
+            return 'url 주소가 잘못되었습니다.'
 
     if data.get('name'):
-        regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
-        if regex.search(data['name']):
+        regex = name_regex()
+        result = regex.search(data['name'])
+        if result is None:
             return '단축 url에 특수문자가 포함되어있습니다.'
 
