@@ -36,8 +36,6 @@ class ProductionConfig(Config):
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root@localhost:3306/shorty'
     SQLALCHEMY_TRACK_MODIFICATIONS = True
-    SERVER_HOST = 'localhost'
-    SERVER_PORT = '5000'
     ENV = 'production'
 
 

@@ -31,7 +31,6 @@ def session():
     except AttributeError:
         session_ = Session()
         ctx._current_session = session_
-
     return session_
 
 

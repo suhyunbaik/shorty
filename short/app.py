@@ -3,6 +3,7 @@ from flask_wtf import CSRFProtect
 from werkzeug.middleware.proxy_fix import ProxyFix
 from config import config_by_name
 from short.api import api
+from short.databases import db
 
 csrf = CSRFProtect()
 
@@ -17,6 +18,7 @@ def create_app(config_name=None):
 
     csrf.exempt(api)
     app.register_blueprint(api)
+    app.register_blueprint(db)
     csrf.init_app(app)
 
     @app.route('/ping')
